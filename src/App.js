@@ -4,48 +4,48 @@ import utils from './utils/Utils'
 
 const StarsDisplay = props => (
   <>
-    {utils.range(1, props.count).map(starId =>
+    {utils.range(1, props.count).map(starId => (
       <div key={starId} className="star" />
-    )}
+    ))}
   </>
 );
 
 const PlayNumber = props => (
-  <button 
+  <button
     className="number"
-    style={{ backgroundColor: colors[props.status] }}
+    style={{backgroundColor: colors[props.status]}}
     onClick={() => props.onClick(props.number, props.status)}
-    >
-      {props.number}
-    </button>
+  >
+    {props.number}
+  </button>
 );
 
-function App() {
+const App = () => {
   const [stars, setStars] = useState(utils.random(1, 9));
   const [availableNums, setAvailableNums] = useState(utils.range(1, 9));
-  const [candidateNums, setCandidateNums] = useState([2, 3]);
+  const [candidateNums, setCandidateNums] = useState([]);
 
   const candidatesAreWrong = utils.sum(candidateNums) > stars;
 
-  const numberStatus = (number) => {
+  const numberStatus = number => {
     if (!availableNums.includes(number)) {
       return 'used';
     }
-
     if (candidateNums.includes(number)) {
       return candidatesAreWrong ? 'wrong' : 'candidate';
     }
-
     return 'available';
   };
 
   const onNumberClick = (number, currentStatus) => {
-    if(currentStatus === 'used') {
+    if (currentStatus === 'used') {
       return;
     }
-    
-    const newCandidateNums = 
-      currentStatus === 'available' ? candidateNums.concat(number):candidateNums.filter(cn => cn !== number);
+
+		const newCandidateNums =
+      currentStatus === 'available'
+        ? candidateNums.concat(number)
+        : candidateNums.filter(cn => cn !== number);
 
     if (utils.sum(newCandidateNums) !== stars) {
       setCandidateNums(newCandidateNums);
@@ -53,13 +53,12 @@ function App() {
       const newAvailableNums = availableNums.filter(
         n => !newCandidateNums.includes(n)
       );
-      
       setStars(utils.randomSumIn(newAvailableNums, 9));
       setAvailableNums(newAvailableNums);
       setCandidateNums([]);
     }
+  };
 
-  }
 
   return (
     <div className="game">
