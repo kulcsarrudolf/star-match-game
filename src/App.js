@@ -11,16 +11,20 @@ const StarsDisplay = props => (
 );
 
 const PlayNumber = props => (
-  <button className="number" 
-  style={{backgroundColor: colors[props.status]}}
-  onClick={() => console.log('Num', props.number)}>{props.number}</button>
+  <button 
+    className="number"
+    style={{ backgroundColor: colors[props.status] }}
+    onClick={() => props.onClick(props.number, props.status)}
+    >
+      {props.number}
+    </button>
 );
 
 function App() {
   const [stars, setStars] = useState(utils.random(1, 9));
-  const [availableNums, setAvailableNums] = useState([1, 2, 3, 4, 5]);
+  const [availableNums, setAvailableNums] = useState(utils.range(1, 9));
   const [candidateNums, setCandidateNums] = useState([2, 3]);
-  
+
   const candidatesAreWrong = utils.sum(candidateNums) > stars;
 
   const numberStatus = (number) => {
@@ -28,12 +32,34 @@ function App() {
       return 'used';
     }
 
-    if (candidateNums.includes(number)){
-      return candidatesAreWrong ? 'wrong':'candidate';
+    if (candidateNums.includes(number)) {
+      return candidatesAreWrong ? 'wrong' : 'candidate';
     }
 
     return 'available';
   };
+
+  const onNumberClick = (number, currentStatus) => {
+    if(currentStatus === 'used') {
+      return;
+    }
+    
+    const newCandidateNums = 
+      currentStatus === 'available' ? candidateNums.concat(number):candidateNums.filter(cn => cn !== number);
+
+    if (utils.sum(newCandidateNums) !== stars) {
+      setCandidateNums(newCandidateNums);
+    } else {
+      const newAvailableNums = availableNums.filter(
+        n => !newCandidateNums.includes(n)
+      );
+      
+      setStars(utils.randomSumIn(newAvailableNums, 9));
+      setAvailableNums(newAvailableNums);
+      setCandidateNums([]);
+    }
+
+  }
 
   return (
     <div className="game">
@@ -48,7 +74,9 @@ function App() {
           {utils.range(1, 9).map(number =>
             <PlayNumber key={number}
               status={numberStatus(number)}
-              number={number} />
+              number={number}
+              onClick={onNumberClick}
+            />
           )}
         </div>
       </div>
