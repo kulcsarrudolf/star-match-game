@@ -2,6 +2,14 @@ import React, { useState, useEffect } from "react";
 import "./App.css";
 import utils from "./utils/Utils";
 
+// Color Theme
+const colors = {
+    available: "lightgray",
+    used: "lightgreen",
+    wrong: "lightcoral",
+    candidate: "deepskyblue",
+};
+
 const StarsDisplay = (props) => (
     <>
         {utils.range(1, props.count).map((starId) => (
@@ -32,7 +40,7 @@ const PlayAgain = (props) => (
     </div>
 );
 
-const App = () => {
+const Game = (props) => {
     const [stars, setStars] = useState(utils.random(1, 9));
     const [availableNums, setAvailableNums] = useState(utils.range(1, 9));
     const [candidateNums, setCandidateNums] = useState([]);
@@ -55,12 +63,15 @@ const App = () => {
 
     const gameStatus = gameIsWon ? "won" : gameIsLost ? "lost" : "active";
 
+    /*
+    This solution removed -> to avoid unexpected side effects
     const resetGame = () => {
         setStars(utils.random(1, 9));
         setAvailableNums(utils.range(1, 9));
         setCandidateNums([]);
         setSecondsLeft(10);
     };
+    */
 
     const numberStatus = (number) => {
         if (!availableNums.includes(number)) {
@@ -103,7 +114,7 @@ const App = () => {
                 <div className="left">
                     {gameStatus !== "active" ? (
                         <PlayAgain
-                            onClick={resetGame}
+                            onClick={props.startNewGame}
                             gameStatus={gameStatus}
                         />
                     ) : (
@@ -126,12 +137,10 @@ const App = () => {
     );
 };
 
-// Color Theme
-const colors = {
-    available: "lightgray",
-    used: "lightgreen",
-    wrong: "lightcoral",
-    candidate: "deepskyblue",
+const StartMatch = () => {
+    const [gameId, setGameId] = useState(1);
+
+    return <Game key={gameId} startNewGame={() => setGameId(gameId + 1)} />;
 };
 
-export default App;
+export default StartMatch;
